@@ -37,7 +37,11 @@ public class AppDbContext : DbContext
         {
             entity.HasKey(e => e.ProductId);
             entity.Property(e => e.Name).HasMaxLength(200).IsRequired();
+            entity.Property(e => e.Category).HasMaxLength(100).IsRequired();
+            entity.Property(e => e.Description).HasMaxLength(1000);
+            entity.Property(e => e.ImageUrl).HasMaxLength(500);
             entity.Property(e => e.Price).HasPrecision(18, 2);
+            entity.HasIndex(e => e.Category);
         });
 
         modelBuilder.Entity<Order>(entity =>
