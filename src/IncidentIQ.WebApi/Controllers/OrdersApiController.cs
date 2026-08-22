@@ -107,6 +107,7 @@ public class OrdersApiController : ControllerBase
     {
         var orders = await _db.Orders
             .Include(o => o.OrderItems)
+                .ThenInclude(i => i.Product)
             .Include(o => o.Payment)
             .OrderByDescending(o => o.CreatedAt)
             .Take(limit)
@@ -119,7 +120,7 @@ public class OrdersApiController : ControllerBase
             o.TotalAmount,
             o.Status,
             o.CreatedAt,
-            o.OrderItems.Select(i => new OrderItemResponseDto(i.ProductId, $"Product #{i.ProductId}", i.Quantity, i.UnitPrice)).ToList()
+            o.OrderItems.Select(i => new OrderItemResponseDto(i.ProductId, i.Product?.Name ?? $"Product #{i.ProductId}", i.Quantity, i.UnitPrice)).ToList()
         )).ToList();
 
         return Ok(dtos);
@@ -130,13 +131,14 @@ public class OrdersApiController : ControllerBase
     {
         var order = await _db.Orders
             .Include(o => o.OrderItems)
+                .ThenInclude(i => i.Product)
             .Include(o => o.Payment)
             .AsNoTracking()
             .FirstOrDefaultAsync(o => o.OrderId == id);
 
         if (order == null) return NotFound(new { Message = $"Order #{id} not found." });
 
-        var items = order.OrderItems.Select(i => new OrderItemResponseDto(i.ProductId, $"Product #{i.ProductId}", i.Quantity, i.UnitPrice)).ToList();
+        var items = order.OrderItems.Select(i => new OrderItemResponseDto(i.ProductId, i.Product?.Name ?? $"Product #{i.ProductId}", i.Quantity, i.UnitPrice)).ToList();
         return Ok(new OrderResponseDto(order.OrderId, order.UserId, order.TotalAmount, order.Status, order.CreatedAt, items));
     }
 }
