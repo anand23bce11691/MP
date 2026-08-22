@@ -90,12 +90,63 @@ export interface ProductItem {
   category: string;
   price: number;
   rating: number;
+  reviewsCount?: number;
   image: string;
   description: string;
   stock: number;
+  specs?: Record<string, string>;
+  features?: string[];
+  inStock?: boolean;
 }
 
 export interface CartItem {
   product: ProductItem;
   quantity: number;
 }
+
+export interface WishlistItem {
+  product: ProductItem;
+  addedAt: string;
+}
+
+export interface CouponCode {
+  code: string;
+  discountPercentage: number;
+  description: string;
+  minAmount?: number;
+}
+
+export interface PlacedOrderItem {
+  orderId: number;
+  date: string;
+  customerName: string;
+  customerEmail: string;
+  shippingAddress: string;
+  items: {
+    productId: number;
+    name: string;
+    price: number;
+    quantity: number;
+    image: string;
+  }[];
+  subtotal: number;
+  discount: number;
+  tax: number;
+  shipping: number;
+  totalAmount: number;
+  paymentMethod: 'card' | 'upi' | 'netbanking' | 'cod';
+  status: 'Confirmed' | 'Processing' | 'Shipped' | 'Delivered';
+  telemetryTraceId: string;
+}
+
+export interface AiChatMessage {
+  id: string;
+  sender: 'user' | 'assistant';
+  timestamp: string;
+  text: string;
+  recommendedProductIds?: number[];
+  comparisonProductIds?: number[];
+  categoryFilter?: string;
+  isQuickAction?: boolean;
+}
+
