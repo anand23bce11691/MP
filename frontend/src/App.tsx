@@ -15,6 +15,11 @@ import { ServiceSlideOver } from './components/ServiceSlideOver';
 import { MetricDrilldownModal } from './components/MetricDrilldownModal';
 import { LogoutModal } from './components/LogoutModal';
 import { ShopEasyCartDrawer } from './components/ShopEasyCartDrawer';
+import { ShopEasyProductDetailModal } from './components/ShopEasyProductDetailModal';
+import { ShopEasyAiAssistant } from './components/ShopEasyAiAssistant';
+import { ShopEasyWishlistDrawer } from './components/ShopEasyWishlistDrawer';
+import { ShopEasyOrderHistoryModal } from './components/ShopEasyOrderHistoryModal';
+import { ShopEasyOrderSuccessModal } from './components/ShopEasyOrderSuccessModal';
 import { Toast } from './components/Toast';
 
 const MainLayout: React.FC = () => {
@@ -49,11 +54,20 @@ const MainLayout: React.FC = () => {
         </main>
       </div>
 
-      {/* Drawers & Modals */}
+      {/* Observability Drawers & Modals */}
       <ServiceSlideOver />
       <MetricDrilldownModal />
       <LogoutModal />
+      
+      {/* ShopEasy E-Commerce Core Drawers & Modals */}
       <ShopEasyCartDrawer />
+      <ShopEasyProductDetailModal />
+      <ShopEasyAiAssistant />
+      <ShopEasyWishlistDrawer />
+      <ShopEasyOrderHistoryModal />
+      <ShopEasyOrderSuccessModal />
+
+      {/* System Toast Notification */}
       <Toast />
     </div>
   );
