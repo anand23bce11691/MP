@@ -1,21 +1,21 @@
 # IncidentIQ Platform & ShopEasy E-Commerce Core
 
-> **IncidentIQ** is an autonomous AI observability and root-cause analysis (RCA) platform coupled with a high-throughput target e-commerce microservice (**ShopEasy E-Commerce Core**) and an intelligent conversational shopping concierge (**Aura AI**).
+IncidentIQ is an autonomous AI-driven observability and root-cause analysis (RCA) platform integrated with a high-throughput target commercial microservice (**ShopEasy E-Commerce Core**) and a grounded conversational shopping assistant (**Aura AI**).
 
 ---
 
-## 🏗️ System Architecture
+## Architecture Overview
 
 ```mermaid
 flowchart TB
-    subgraph ClientTier["Frontend Layer (React 19 + Vite + TailwindCSS)"]
-        Storefront["ShopEasy Storefront UI\n• Catalog Grid & Filters\n• Product Quick View & Specs\n• Wishlist & Order History"]
-        AuraAI["Aura AI Shopping Concierge\n• Catalog Grounding\n• Budget & Spec Matching\n• Comparison Cards"]
-        Cart["Cart & Checkout Engine\n• Promo Codes (SAVE10, TECH20)\n• Multi-Payment (Card, UPI, COD)\n• LocalStorage Persistence"]
-        ObservabilityUI["IncidentIQ SRE Dashboard\n• Real-Time Latency Streams\n• Anomaly & Incident RCA\n• Chaos Laboratory"]
+    subgraph ClientTier["Client Layer (React 19, TypeScript, TailwindCSS)"]
+        Storefront["ShopEasy Storefront UI\n- Catalog Grid & Multi-Filter\n- Specification Inspection Modal\n- Wishlist & Order History"]
+        AuraAI["Aura AI Shopping Concierge\n- Catalog Grounding Engine\n- Constraint & Budget Reasoning\n- Side-by-Side Comparison"]
+        Cart["Cart & Checkout Engine\n- Promotional Coupon Rules\n- Multi-Payment Integration\n- Client-Side State Persistence"]
+        ObservabilityUI["IncidentIQ SRE Dashboard\n- Real-Time Latency Streams\n- Incident Root-Cause Reports\n- Chaos Fault Injection Lab"]
     end
 
-    subgraph ApiTier[".NET 8 Web API Core Engine"]
+    subgraph ApiTier["Application Layer (.NET 8 Web API)"]
         ProdCtrl["/api/products\n(ProductsApiController)"]
         OrderCtrl["/api/orders\n(OrdersApiController)"]
         PayCtrl["/api/payments\n(PaymentsApiController)"]
@@ -27,21 +27,21 @@ flowchart TB
         Hub["SignalR TelemetryHub"]
     end
 
-    subgraph AIAndRcaEngine["AI & RCA Intelligence Layer"]
-        AnomalyEngine["AnomalyDetectionEngine\n(P95 Latency & Metric Drift)"]
-        RCAEngine["RootCauseAnalysisEngine\n(Bayesian Evidence Chain)"]
-        TrafficSim["TrafficSimulatorService\n(Virtual User Load)"]
-        ChaosManager["FailureSimulationManager\n(Fault Injection)"]
+    subgraph AIAndRcaEngine["Intelligence & Simulation Layer"]
+        AnomalyEngine["AnomalyDetectionEngine\n(P95 Latency & Statistical Drift)"]
+        RCAEngine["RootCauseAnalysisEngine\n(Evidence Chain Correlation)"]
+        TrafficSim["TrafficSimulatorService\n(Virtual User Traffic)"]
+        ChaosManager["FailureSimulationManager\n(Fault Injection Engine)"]
     end
 
     subgraph DataTier["Persistence Layer (EF Core 8)"]
-        SQLServer[("SQL Server 2022 / SQLite\n• Products (15 Rich Catalog Items)\n• Orders & OrderItems\n• Payments & Users\n• Incidents & TelemetryEvents")]
+        SQLServer[("SQL Server 2022 / SQLite\n- Products Catalog\n- Orders & OrderItems\n- Payments & Users\n- TelemetryEvents & Incidents")]
     end
 
-    Storefront -->|Browse & Filter| ProdCtrl
-    Cart -->|POST /api/orders| OrderCtrl
-    Cart -->|POST /api/payments| PayCtrl
-    AuraAI -->|Catalog Grounding| ProdCtrl
+    Storefront -->|Catalog & Search Queries| ProdCtrl
+    Cart -->|Order Transactions| OrderCtrl
+    Cart -->|Payment Confirmations| PayCtrl
+    AuraAI -->|Product Verification| ProdCtrl
     ObservabilityUI -->|Chaos Commands| SimCtrl
     ObservabilityUI <-->|WebSocket Real-Time Stream| Hub
 
@@ -50,7 +50,7 @@ flowchart TB
     PayCtrl --> Interceptor --> SQLServer
 
     OrderCtrl -.->|HTTP Duration & Status| MW
-    Interceptor -.->|SQL Query Execution Ms| MW
+    Interceptor -.->|SQL Query Execution Time| MW
     MW --> AnomalyEngine --> RCAEngine --> Hub
     TrafficSim --> OrderCtrl
     ChaosManager --> Interceptor
@@ -58,12 +58,12 @@ flowchart TB
 
 ---
 
-## ⚡ E-Commerce Order Placement & Telemetry Pipeline
+## Transaction & Telemetry Execution Flow
 
 ```mermaid
 sequenceDiagram
     autonumber
-    actor Customer as Shopper / SRE
+    actor Customer as Shopper / SRE Operator
     participant UI as ShopEasy Storefront
     participant AI as Aura AI Concierge
     participant OrderAPI as Orders API (/api/orders)
@@ -73,119 +73,122 @@ sequenceDiagram
     participant RCA as IncidentIQ RCA Engine
     participant Monitor as Live Telemetry Stream
 
-    Customer->>AI: "Find high-performance audio under ₹5000"
-    AI->>UI: Return grounded catalog items + 1-Click "Add to Cart"
-    Customer->>UI: Add to Cart, apply coupon "SAVE10", select UPI / Card
-    Customer->>UI: Click "Place Monitored Order"
+    Customer->>AI: Natural language query (e.g., "Find audio gear under INR 5,000")
+    AI->>UI: Return verified catalog items with direct cart actions
+    Customer->>UI: Add items, apply promo code (SAVE10), select payment method
+    Customer->>UI: Submit checkout request
     
-    UI->>OrderAPI: POST /api/orders (Items, Customer, Address)
-    OrderAPI->>Interceptor: Execute DbCommand (Insert Order & OrderItems)
-    Interceptor->>DB: Begin Transaction & Decrement Stock
-    DB-->>Interceptor: Committed (e.g. 8ms normal / 1450ms under chaos lock)
-    Interceptor-->>Telemetry: Report SQL Latency Duration
-    OrderAPI-->>UI: 201 Created (OrderId, Total, TelemetryTraceId)
+    UI->>OrderAPI: POST /api/orders (Line items, customer info, address)
+    OrderAPI->>Interceptor: Execute DbCommand (INSERT Orders, UPDATE Stock)
+    Interceptor->>DB: Open transaction and commit entity changes
+    DB-->>Interceptor: Execution complete (8ms baseline / 1450ms under chaos lock)
+    Interceptor-->>Telemetry: Report SQL execution latency
+    OrderAPI-->>UI: 201 Created (OrderId, TotalAmount, TelemetryTraceId)
     
-    OrderAPI-->>Telemetry: Report HTTP Status 201 & Request Duration
-    Telemetry->>RCA: Correlate TraceId, Latency Drift & Error Baseline
-    RCA->>Monitor: Stream Live Metric Sample & Trace Log
-    UI-->>Customer: Display Order Confirmation Modal with Trace ID
+    OrderAPI-->>Telemetry: Report HTTP Status 201 & request duration
+    Telemetry->>RCA: Evaluate metric drift against baseline
+    RCA->>Monitor: Publish real-time sample & structured trace log
+    UI-->>Customer: Display confirmation with Telemetry Trace ID
 ```
 
 ---
 
-## 🤖 Aura AI Conversational Shopping Flow
+## Conversational Commerce Decision Engine
 
 ```mermaid
 flowchart TD
-    UserQuery["User Natural Language Query\n(e.g., 'Best coding keyboard and monitor setup under ₹50k')"]
+    UserQuery["User Natural Language Input\n(e.g., 'Compare curved monitor and mechanical keyboard')"]
     
-    subgraph AuraEngine["Aura AI Decision Engine"]
-        Parser["Intent & Entity Extraction\n• Budget: ₹50,000\n• Categories: Peripherals, Displays\n• Use-Case: Coding / Dev"]
-        CatalogFilter["Strict Catalog Grounding & Constraint Filter\n• Filter verified items in stock\n• Validate prices and specs"]
-        ComparisonLogic{"Is Comparison Requested?"}
-        Ranker["Multi-Factor Ranking\n(Rating ★ × Review Count × Spec Fit)"]
+    subgraph AuraEngine["Aura AI Decision Core"]
+        Parser["Intent & Entity Extraction\n- Budget Constraints\n- Category & Feature Extraction\n- Workload / Use-Case Classification"]
+        CatalogFilter["Catalog Grounding & Stock Verification\n- Enforce price & inventory boundaries\n- Prevent hallucinated specifications"]
+        ComparisonLogic{"Comparison Intent Detected?"}
+        Ranker["Multi-Factor Ranking\n(Review Quality x Rating x Spec Relevance)"]
     end
     
-    subgraph UIOutput["Interactive Storefront Output"]
-        ChatResponse["Conversational Explanation & Grounded Advice"]
-        ProductCards["Interactive Recommendation Cards\n• Image, Badge, Rating & Price\n• Quick 'Add to Cart' Button\n• 'Quick View Specs' Button"]
-        SideBySide["Side-by-Side Spec Comparison Grid"]
+    subgraph UIOutput["Client Presentation"]
+        ChatResponse["Grounded Response Summary"]
+        ProductCards["Structured Recommendation Cards\n- Specs, Price, Rating, Stock\n- Quick Add to Cart\n- Specification Drilldown"]
+        SideBySide["Side-by-Side Comparison Matrix"]
     end
 
     UserQuery --> Parser --> CatalogFilter --> ComparisonLogic
     ComparisonLogic -->|Yes| SideBySide --> ChatResponse
     ComparisonLogic -->|No| Ranker --> ProductCards --> ChatResponse
-    ChatResponse --> CartDirect["Direct Cart Addition & Checkout Sync"]
+    ChatResponse --> CartDirect["Direct Cart & Checkout Synchronization"]
 ```
 
 ---
 
-## ✨ Features Breakdown
+## System Capabilities
 
-### 🛍️ ShopEasy E-Commerce Core
-- **Curated 15-Product Tech Catalog:** High-resolution photography, categorized under *Audio, Peripherals, Displays, Wearables, Storage, Video, Accessories, Furniture, and Smart Home*.
-- **Technical Specification Drilldown:** In-depth product modal with technical specs tables, warranty badges, verified reviews, and instant "Buy Now" flow.
-- **Persistent Wishlist:** One-click favorite toggling saved to browser storage, with easy "Move to Cart" drawer actions.
-- **Promo & Coupon Engine:** Instant discount calculation supporting `SAVE10` (10% off), `TECH20` (20% off > ₹10,000), and `FREESHIP`.
-- **Flexible Checkout:** Multi-payment options including Credit/Debit Card, UPI / QR Code, Net Banking, and Cash on Delivery (COD) with itemized GST breakdown.
-- **Order History & Telemetry Link:** Tracks previous orders with live status badges and direct links to inspect the associated transaction's SQL query and HTTP latency traces.
+### 1. ShopEasy E-Commerce Core
+- **Curated Product Catalog:** Categorized inventory covering Audio, Peripherals, Displays, Wearables, Storage, Video, Accessories, Furniture, and Smart Home with high-resolution imagery and verified technical specifications.
+- **Specification Drilldown Modal:** Detailed technical sheets, warranty badges, verified user review distributions, and instant purchase flows.
+- **Wishlist Management:** Persistent client-side favorites management with one-click batch migration to active cart sessions.
+- **Promotional Discount Engine:** Real-time discount calculations supporting promotional rules (`SAVE10`, `TECH20`, `FREESHIP`).
+- **Multi-Method Checkout:** Support for Credit/Debit Cards, UPI / QR payments, Net Banking, and Cash on Delivery (COD) with automated GST calculation.
+- **Order Tracking & Telemetry Link:** Post-purchase tracking connected directly to backend trace IDs for full observability correlation.
 
-### 🧠 Aura AI Shopping Concierge
-- **Strict Catalog Grounding:** Answers customer queries strictly from real catalog data without inventing non-existent models, fake stock, or hallucinated prices.
-- **Natural Language & Budget Parsing:** Extracts price thresholds (e.g. *"under 5k"*, *"below ₹15,000"*), target categories, and use cases (*"gaming"*, *"podcasting"*, *"remote work"*).
-- **Side-by-Side Comparison:** Compares specifications, ratings, and price-to-performance metrics between products.
-- **1-Click Cart Addition:** Directly adds recommended product bundles into the shopping cart from within the chat interface.
+### 2. Aura AI Shopping Concierge
+- **Strict Catalog Grounding:** Recommendations are constrained to real database records to prevent hallucination of pricing, specifications, or availability.
+- **Constraint Resolution:** Automatic extraction and enforcement of budget limits, hardware categories, and use cases.
+- **Comparative Analysis:** Structured side-by-side technical evaluation across catalog items.
+- **Interactive UI Integration:** Direct cart addition and specification modal triggers from within the conversational interface.
 
-### 📈 IncidentIQ SRE Observability Platform
-- **Dual Telemetry Ingestion:** Supports push telemetry (`POST /api/monitoring/ingest`) and real-time middleware interception.
-- **Chaos Laboratory:** Inject synthetic failure modes (Database Lock & Slowdown, HTTP 500 Payment Outage, Traffic Surge Threadpool Saturation, Cascading Failures).
-- **Automated Root-Cause Diagnosis:** Correlates time-series anomaly sequences to diagnose root causes with percentage confidence scores and suggested remediation plans.
+### 3. IncidentIQ SRE Observability Platform
+- **Telemetry Ingestion:** High-throughput telemetry collector supporting push telemetry (`POST /api/monitoring/ingest`) and EF Core middleware interception.
+- **Chaos Laboratory:** Deterministic failure injection including database connection pool exhaustion, payment gateway outages (HTTP 500), traffic surges, and cascading multi-service failures.
+- **Root-Cause Analysis Engine:** Statistical anomaly evaluation with confidence scoring, evidence chains, and suggested remediation procedures.
 
 ---
 
-## 🚀 Getting Started Locally
+## Local Development and Deployment
 
 ### Prerequisites
-- [Node.js](https://nodejs.org/) (v18+) & [npm](https://www.npmjs.com/)
-- [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0) (optional for backend API execution)
+- Node.js (v18 or higher) and npm
+- .NET 8 SDK (for backend execution)
 
-### 1. Run Frontend Dev Server
+### 1. Frontend Setup (Development Server)
 ```bash
 cd frontend
 npm install
 npm run dev
 ```
-Open `http://localhost:5173` in your browser.
+Access the application at `http://localhost:5173`.
 
-### 2. Build Frontend for Production (Bundles into WebApi wwwroot)
+### 2. Frontend Production Build
 ```bash
 cd frontend
 npm run build
 ```
+Builds the optimized production client bundle directly into `src/IncidentIQ.WebApi/wwwroot`.
 
-### 3. Run Backend .NET Web API
+### 3. Backend Execution (.NET Web API)
 ```powershell
 dotnet run --project .\src\IncidentIQ.WebApi
 ```
-The SQLite database (`incidentiq-platform.db`) is automatically initialized and seeded with the rich product catalog and monitoring endpoints.
+The database model and default catalog are seeded automatically on first run.
 
-### 4. Docker / SQL Server Deployment
+### 4. Docker Deployment
 ```powershell
 docker compose up --build
 ```
-Access the application at `http://localhost:8080`.
+Access the containerized application at `http://localhost:8080`.
 
 ---
 
-## 📡 REST API Reference
+## API Specification
 
-| Method | Endpoint | Description |
+| HTTP Method | Route | Description |
 | :--- | :--- | :--- |
-| `GET` | `/api/products` | Query catalog items with `?category=`, `?search=`, `?sort=`, and `?minPrice=` |
-| `GET` | `/api/products/{id}` | Get product details by ID |
-| `POST` | `/api/orders` | Place a new order, deduct stock, and emit telemetry |
-| `GET` | `/api/orders` | Retrieve recent orders with full line item details |
-| `POST` | `/api/payments` | Process virtual payment settlement for an order |
+| `GET` | `/api/products` | Retrieve catalog items with filtering (`category`, `search`, `sort`, `minPrice`, `maxPrice`) |
+| `GET` | `/api/products/{id}` | Retrieve individual product details and technical specifications |
+| `POST` | `/api/products` | Create a new catalog product |
+| `POST` | `/api/orders` | Submit customer order, decrement stock, and record telemetry |
+| `GET` | `/api/orders` | Retrieve recent orders with associated line items and status |
+| `GET` | `/api/orders/{id}` | Retrieve specific order details by ID |
+| `POST` | `/api/payments` | Process virtual transaction settlement for an existing order |
 | `POST` | `/api/monitoring/ingest` | Ingest external application telemetry events |
-| `GET` | `/api/simulation/state` | Inspect current chaos failure simulation status |
-| `POST` | `/api/simulation/command` | Inject or reset chaos failure states |
+| `GET` | `/api/simulation/state` | Retrieve active chaos simulation states |
+| `POST` | `/api/simulation/command` | Execute chaos fault injection or reset baselines |
