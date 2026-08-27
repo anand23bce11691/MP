@@ -1,5 +1,5 @@
 # Comprehensive Walkthrough Plan & Development Roadmap
-## Project Name: NEXGUARD IncidentIQ (AI Incident Commander Platform)
+## Project Name: IncidentIQ (AI Incident Commander Platform)
 
 ---
 
