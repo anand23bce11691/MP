@@ -1,4 +1,5 @@
 using IncidentIQ.Application.Dtos;
+using IncidentIQ.Application.Interfaces;
 using IncidentIQ.Domain.Enums;
 using IncidentIQ.Infrastructure.Data;
 using Microsoft.AspNetCore.Mvc;
@@ -11,10 +12,12 @@ namespace IncidentIQ.WebApi.Controllers;
 public class IncidentsApiController : ControllerBase
 {
     private readonly AppDbContext _db;
+    private readonly IGeminiAiAdvisorService _geminiAdvisor;
 
-    public IncidentsApiController(AppDbContext db)
+    public IncidentsApiController(AppDbContext db, IGeminiAiAdvisorService geminiAdvisor)
     {
         _db = db;
+        _geminiAdvisor = geminiAdvisor;
     }
 
     [HttpGet]
@@ -86,6 +89,26 @@ public class IncidentsApiController : ControllerBase
         await _db.SaveChangesAsync();
 
         return Ok(new { message = $"Incident {incident.IncidentNumber} successfully resolved.", incidentId = id, status = incident.Status.ToString() });
+    }
+
+    [HttpGet("{id:int}/ai-recommendation")]
+    public async Task<IActionResult> GetGeminiAiRecommendation(int id)
+    {
+        var incident = await _db.Incidents.Include(x => x.Evidences).FirstOrDefaultAsync(x => x.IncidentId == id);
+        
+        string title = incident?.Title ?? "Database Connection Pool Lock Timeout";
+        string severity = incident?.Severity.ToString() ?? "HIGH";
+        string evidence = incident != null ? string.Join("; ", incident.Evidences.Select(e => $"{e.MetricName}: {e.ObservedValue} (Baseline: {e.BaselineValue})")) : "SQL query execution delay 1450ms";
+        
+        var logs = await _db.ApplicationLogs
+            .OrderByDescending(l => l.Timestamp)
+            .Take(5)
+            .Select(l => $"{l.RequestMethod} {l.RequestPath} ({l.StatusCode}) - {l.ResponseTimeMs}ms (SQL: {l.SqlTimeMs}ms) {l.ErrorMessage}")
+            .ToListAsync();
+        string rawLogs = string.Join("\n", logs);
+
+        var recommendation = await _geminiAdvisor.AnalyzeIncidentAsync(title, severity, evidence, rawLogs);
+        return Ok(recommendation);
     }
 
     [HttpGet("metrics")]

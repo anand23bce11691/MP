@@ -1,4 +1,4 @@
-export type ViewRoute = 'dashboard' | 'shopeasy' | 'live-monitoring' | 'incidents' | 'services' | 'logs' | 'simulations' | 'reports';
+export type ViewRoute = 'dashboard' | 'shopeasy' | 'live-monitoring' | 'incidents' | 'services' | 'logs' | 'simulations' | 'reports' | 'tracing' | 'slo' | 'remediation' | 'postmortem' | 'security' | 'benchmark';
 
 export type SystemStatus = 'healthy' | 'degraded' | 'critical';
 

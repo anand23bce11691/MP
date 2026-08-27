@@ -533,13 +533,7 @@ const initialThroughput: ThroughputSample[] = [
   { time: '10:14', requests: 184, errors: 0 }
 ];
 
-const initialLogs: LogEntry[] = [
-  { id: 'l1', timestamp: '10:14:45.102', level: 'INFO', service: 'Application Core', message: 'POST /api/orders 200 OK - 42ms (TraceId: 8f9a2b)', traceId: '8f9a2b' },
-  { id: 'l2', timestamp: '10:14:42.890', level: 'INFO', service: 'Database Engine', message: 'Executed DbCommand (4ms) [INSERT INTO Orders (UserId, TotalAmount)]', traceId: '8f9a2b' },
-  { id: 'l3', timestamp: '10:14:38.511', level: 'INFO', service: 'Payment Gateway', message: 'POST /api/payments 200 OK - 142ms', traceId: '4c71ef' },
-  { id: 'l4', timestamp: '10:14:30.004', level: 'INFO', service: 'SystemMetricsWorker', message: 'Telemetry heartbeat generated: CPU 42%, Memory 51%, P95 42ms', traceId: 'sys-hb' },
-  { id: 'l5', timestamp: '10:14:15.220', level: 'INFO', service: 'Application Core', message: 'GET /api/products 200 OK - 18ms (15 catalog items)', traceId: '1d99e0' }
-];
+const initialLogs: LogEntry[] = [];
 
 const defaultInitialAiMessages: AiChatMessage[] = [
   {
@@ -1226,6 +1220,34 @@ export const TelemetryProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     setNotifications(prev => prev.map(n => ({ ...n, read: true })));
     showToast('All notifications marked as read.');
   }, [showToast]);
+
+  // Live polling for ingested backend telemetry logs from ShopEasy (Port 5001 -> Port 5000)
+  useEffect(() => {
+    const fetchIngestedLogs = async () => {
+      try {
+        const res = await fetch('/api/telemetry/logs?limit=50');
+        if (res.ok) {
+          const fetchedLogs: LogEntry[] = await res.json();
+          if (Array.isArray(fetchedLogs) && fetchedLogs.length > 0) {
+            setLogs(prev => {
+              const existingIds = new Set(prev.map(l => l.id));
+              const newItems = fetchedLogs.filter(l => !existingIds.has(l.id));
+              if (newItems.length > 0) {
+                return [...newItems, ...prev].slice(0, 100);
+              }
+              return prev;
+            });
+          }
+        }
+      } catch {
+        // quiet fallback
+      }
+    };
+
+    fetchIngestedLogs();
+    const interval = setInterval(fetchIngestedLogs, 2000);
+    return () => clearInterval(interval);
+  }, []);
 
   // Streaming ticker loop
   useEffect(() => {

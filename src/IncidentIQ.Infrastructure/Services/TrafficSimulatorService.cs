@@ -10,7 +10,7 @@ public class TrafficSimulatorService : BackgroundService, ITrafficSimulatorServi
 {
     private readonly IFailureSimulationManager _simulationManager;
     private readonly ILogger<TrafficSimulatorService> _logger;
-    private string _mode = "Normal"; // Normal (100 RPM), High (1000 RPM), Extreme (3000 RPM)
+    private string _mode = "Off"; // Default Off so log stream is reserved 100% for live user interactions from connected apps (e.g. ShopEasy)
     private readonly HttpClient _httpClient = new();
 
     public TrafficSimulatorService(IFailureSimulationManager simulationManager, ILogger<TrafficSimulatorService> logger)
@@ -28,7 +28,6 @@ public class TrafficSimulatorService : BackgroundService, ITrafficSimulatorServi
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        // Wait for WebApi server startup
         await Task.Delay(3000, stoppingToken);
         var baseUrl = "http://localhost:5000";
 
@@ -39,16 +38,21 @@ public class TrafficSimulatorService : BackgroundService, ITrafficSimulatorServi
                 var state = _simulationManager.GetState();
                 var activeMode = state.IsTrafficSpikeActive || state.IsCascadingFailureActive ? "Extreme" : _mode;
 
+                if (activeMode == "Off")
+                {
+                    await Task.Delay(1000, stoppingToken);
+                    continue;
+                }
+
                 int delayMs = activeMode switch
                 {
-                    "Extreme" => 20,   // ~3000 RPM
-                    "High" => 60,      // ~1000 RPM
-                    _ => 600           // ~100 RPM
+                    "Extreme" => 50,    // High load spike
+                    "High" => 200,     // Moderate load
+                    "Normal" => 1000,  // Low steady load
+                    _ => 2000
                 };
 
-                // Execute random user flow
                 await ExecuteRandomUserFlowAsync(baseUrl, stoppingToken);
-
                 await Task.Delay(delayMs, stoppingToken);
             }
             catch (Exception ex)
@@ -67,18 +71,15 @@ public class TrafficSimulatorService : BackgroundService, ITrafficSimulatorServi
 
             if (rand <= 50)
             {
-                // GET Products
                 await _httpClient.GetAsync($"{baseUrl}/api/products", ct);
             }
             else if (rand <= 80)
             {
-                // GET Product Details
                 var productId = Random.Shared.Next(1, 50);
                 await _httpClient.GetAsync($"{baseUrl}/api/products/{productId}", ct);
             }
             else
             {
-                // POST Order & Payment
                 var userId = Random.Shared.Next(1, 10);
                 var productId = Random.Shared.Next(1, 50);
 

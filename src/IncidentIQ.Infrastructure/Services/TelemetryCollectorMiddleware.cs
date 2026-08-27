@@ -17,17 +17,24 @@ public class TelemetryCollectorMiddleware
         _next = next;
     }
 
+    public static List<ApplicationLog> GetRecentLogs()
+    {
+        lock (_lock)
+        {
+            return _recentLogs.OrderByDescending(l => l.Timestamp).ToList();
+        }
+    }
+
     public static (double avgApiLatencyMs, int requestCount, int errorCount) GetSnapshotAndReset()
     {
         lock (_lock)
         {
-            if (_recentLogs.Count == 0) return (110.0, 100, 0); // Baseline default
+            if (_recentLogs.Count == 0) return (42.0, 185, 0);
 
             var avgApiLatency = _recentLogs.Average(l => l.ResponseTimeMs);
             var reqCount = _recentLogs.Count;
             var errCount = _recentLogs.Count(l => l.StatusCode >= 500);
 
-            _recentLogs.Clear();
             return (avgApiLatency, reqCount, errCount);
         }
     }
@@ -37,6 +44,13 @@ public class TelemetryCollectorMiddleware
         var sw = Stopwatch.StartNew();
         var path = context.Request.Path.Value ?? "";
         var method = context.Request.Method;
+
+        // Skip static asset logging & CORS OPTIONS preflight to keep telemetry log stream clean
+        if (method == "OPTIONS" || path.StartsWith("/assets") || path.EndsWith(".js") || path.EndsWith(".css") || path.EndsWith(".png") || path.EndsWith(".svg") || path.EndsWith(".ico"))
+        {
+            await _next(context);
+            return;
+        }
 
         var state = simulationManager.GetState();
 
@@ -76,12 +90,13 @@ public class TelemetryCollectorMiddleware
         }
     }
 
-    private static void RecordLog(string method, string path, int statusCode, double responseMs, double sqlMs, string? error)
+    public static void RecordLog(string method, string path, int statusCode, double responseMs, double sqlMs, string? error)
     {
         lock (_lock)
         {
             _recentLogs.Add(new ApplicationLog
             {
+                LogId = _recentLogs.Count + 1,
                 Timestamp = DateTime.UtcNow,
                 RequestMethod = method,
                 RequestPath = path,
@@ -91,7 +106,7 @@ public class TelemetryCollectorMiddleware
                 ErrorMessage = error
             });
 
-            if (_recentLogs.Count > 1000)
+            if (_recentLogs.Count > 500)
             {
                 _recentLogs.RemoveAt(0);
             }

@@ -23,7 +23,19 @@ builder.Services.AddDbContext<AppDbContext>((sp, options) =>
     options.AddInterceptors(interceptor);
 });
 
+// Configure CORS for Standalone App Communication (e.g. ShopEasy on Port 5001 -> IncidentIQ on Port 5000)
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", policy =>
+    {
+        policy.AllowAnyOrigin()
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
+
 // AI Engines & Simulation Services
+builder.Services.AddHttpClient<IGeminiAiAdvisorService, GeminiAiAdvisorService>();
 builder.Services.AddSingleton<IFailureSimulationManager, FailureSimulationManager>();
 builder.Services.AddSingleton<ITrafficSimulatorService, TrafficSimulatorService>();
 builder.Services.AddSingleton<IAnomalyDetectionEngine, AnomalyDetectionEngine>();
@@ -46,7 +58,7 @@ builder.Services.AddSwaggerGen(c =>
     {
         Title = "IncidentIQ API Engine",
         Version = "v1",
-        Description = "Telemetry Monitoring, Chaos Failure Injection, and AI Root-Cause Analysis Engine"
+        Description = "Telemetry Monitoring, Chaos Failure Injection, and Google Gemini AI Root-Cause Analysis Engine"
     });
 });
 
@@ -74,11 +86,15 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
-// Pipeline Configuration
-app.UseMiddleware<TelemetryCollectorMiddleware>();
+// Pipeline Configuration (Correct Middleware Order for CORS)
 app.UseDefaultFiles();
 app.UseStaticFiles();
 app.UseRouting();
+
+app.UseCors("AllowAll");
+
+app.UseMiddleware<TelemetryCollectorMiddleware>();
+
 app.MapControllers();
 app.MapHub<TelemetryHub>("/hubs/telemetry");
 

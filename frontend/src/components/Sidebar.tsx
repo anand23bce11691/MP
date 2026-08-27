@@ -4,7 +4,6 @@ import type { ViewRoute } from '../types';
 import {
   ShieldAlert,
   LayoutDashboard,
-  ShoppingBag,
   Activity,
   AlertTriangle,
   Server,
@@ -13,24 +12,34 @@ import {
   FileText,
   LogOut,
   Settings,
-  UserCheck
+  UserCheck,
+  GitMerge,
+  Target,
+  Wrench,
+  FileCheck2,
+  Lock,
+  Gauge
 } from 'lucide-react';
 
 export const Sidebar: React.FC = () => {
-  const { activeRoute, setActiveRoute, incidents, services, setIsLogoutModalOpen, showToast, cart } = useTelemetry();
+  const { activeRoute, setActiveRoute, incidents, services, setIsLogoutModalOpen, showToast } = useTelemetry();
 
   const openIncidentsCount = incidents.filter(i => i.status !== 'Resolved').length;
-  const totalCartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
 
   const navItems: { id: ViewRoute; label: string; icon: React.ReactNode; badge?: number | string }[] = [
     { id: 'dashboard', label: 'Command Center', icon: <LayoutDashboard className="w-4 h-4" /> },
-    { id: 'shopeasy', label: 'ShopEasy App', icon: <ShoppingBag className="w-4 h-4" />, badge: totalCartCount > 0 ? totalCartCount : undefined },
     { id: 'live-monitoring', label: 'Live Monitoring', icon: <Activity className="w-4 h-4" /> },
+    { id: 'tracing', label: 'Distributed Tracing', icon: <GitMerge className="w-4 h-4" /> },
+    { id: 'slo', label: 'SRE Error Budgets', icon: <Target className="w-4 h-4" /> },
+    { id: 'remediation', label: 'Auto Remediation', icon: <Wrench className="w-4 h-4" /> },
+    { id: 'security', label: 'Security Audit', icon: <Lock className="w-4 h-4" /> },
+    { id: 'benchmark', label: 'Load Benchmarks', icon: <Gauge className="w-4 h-4" /> },
+    { id: 'postmortem', label: 'AI Post-Mortem', icon: <FileCheck2 className="w-4 h-4" /> },
     { id: 'incidents', label: 'Incidents', icon: <AlertTriangle className="w-4 h-4" />, badge: openIncidentsCount > 0 ? openIncidentsCount : undefined },
-    { id: 'services', label: 'System Services', icon: <Server className="w-4 h-4" />, badge: services.length },
+    { id: 'services', label: 'Monitored Target Apps', icon: <Server className="w-4 h-4" />, badge: services.length },
     { id: 'logs', label: 'Logs & Metrics', icon: <Terminal className="w-4 h-4" /> },
     { id: 'simulations', label: 'Chaos Laboratory', icon: <FlaskConical className="w-4 h-4" /> },
-    { id: 'reports', label: 'Reports', icon: <FileText className="w-4 h-4" /> },
+    { id: 'reports', label: 'Reports', icon: <FileText className="w-4 h-4" /> }
   ];
 
   return (
@@ -71,8 +80,6 @@ export const Sidebar: React.FC = () => {
                 <span className={`text-xs px-2 py-0.5 rounded-full font-bold ${
                   item.id === 'incidents' && openIncidentsCount > 0
                     ? 'bg-rose-100 text-rose-600 border border-rose-200 animate-pulse'
-                    : item.id === 'shopeasy'
-                    ? 'bg-blue-600 text-white'
                     : 'bg-slate-200 text-slate-600'
                 }`}>
                   {item.badge}
@@ -93,13 +100,13 @@ export const Sidebar: React.FC = () => {
             <div className="overflow-hidden">
               <p className="text-xs font-bold text-slate-900 truncate">S. Anderson</p>
               <p className="text-[10px] text-slate-500 flex items-center gap-1 font-medium">
-                <UserCheck className="w-2.5 h-2.5 text-emerald-500" /> Sys Admin
+                <UserCheck className="w-2.5 h-2.5 text-emerald-500" /> Lead SRE Architect
               </p>
             </div>
           </div>
           <div className="flex items-center gap-1">
             <button
-              onClick={() => showToast('Settings configured for System Administrator (S. Anderson)')}
+              onClick={() => showToast('Settings configured for Lead SRE Architect')}
               className="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-md transition-colors"
               title="Settings"
             >

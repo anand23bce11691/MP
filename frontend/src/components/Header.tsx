@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { useTelemetry } from '../context/TelemetryContext';
-import { Bell, CheckCircle2, AlertTriangle, ShieldAlert, X, ShoppingBag } from 'lucide-react';
+import { Bell, CheckCircle2, AlertTriangle, ShieldAlert, X } from 'lucide-react';
 
 export const Header: React.FC = () => {
-  const { globalStatus, notifications, markAllNotificationsRead, setActiveRoute } = useTelemetry();
+  const { globalStatus, notifications, markAllNotificationsRead } = useTelemetry();
   const [showNotifications, setShowNotifications] = useState(false);
 
   const unreadCount = notifications.filter(n => !n.read).length;
@@ -35,15 +35,6 @@ export const Header: React.FC = () => {
 
       {/* Header Actions & Notifications */}
       <div className="flex items-center gap-3 relative">
-        {/* Open Storefront Shortcut Button */}
-        <button
-          onClick={() => setActiveRoute('shopeasy')}
-          className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-blue-50 text-blue-700 border border-blue-200 font-bold text-xs hover:bg-blue-100 transition-all shadow-xs"
-        >
-          <ShoppingBag className="w-4 h-4 text-blue-600" />
-          <span>ShopEasy App</span>
-        </button>
-
         {/* Notification Bell */}
         <div className="relative">
           <button

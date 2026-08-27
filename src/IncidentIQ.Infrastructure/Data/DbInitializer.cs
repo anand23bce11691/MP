@@ -11,14 +11,72 @@ public static class DbInitializer
         {
             context.Database.EnsureCreated();
 
-            // Auto-migrate schema updates for SQL Server if columns were added
+            // Auto-migrate schema updates for SQL Server if tables or columns are missing
             context.Database.ExecuteSqlRaw(@"
+                IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'MonitoredApplications')
+                BEGIN
+                    CREATE TABLE [MonitoredApplications] (
+                        [MonitoredApplicationId] INT IDENTITY(1,1) PRIMARY KEY,
+                        [Name] NVARCHAR(MAX) NOT NULL,
+                        [BaseUrl] NVARCHAR(MAX) NOT NULL,
+                        [ApiKey] NVARCHAR(MAX) NOT NULL,
+                        [IsActive] BIT NOT NULL DEFAULT 1,
+                        [CreatedAt] DATETIME2 NOT NULL,
+                        [LastSeenAt] DATETIME2 NOT NULL
+                    );
+                END
+
+                IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'MonitoredEndpoints')
+                BEGIN
+                    CREATE TABLE [MonitoredEndpoints] (
+                        [MonitoredEndpointId] INT IDENTITY(1,1) PRIMARY KEY,
+                        [MonitoredApplicationId] INT NOT NULL,
+                        [Name] NVARCHAR(MAX) NOT NULL,
+                        [Url] NVARCHAR(MAX) NOT NULL,
+                        [Method] NVARCHAR(MAX) NOT NULL,
+                        [ExpectedStatusCode] INT NOT NULL DEFAULT 200,
+                        [CheckIntervalSeconds] INT NOT NULL DEFAULT 15,
+                        [IsActive] BIT NOT NULL DEFAULT 1,
+                        [LastCheckedAt] DATETIME2 NOT NULL
+                    );
+                END
+
                 IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Incidents')
                 BEGIN
                     IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'Incidents' AND COLUMN_NAME = 'MonitoredApplicationId')
                     BEGIN
                         ALTER TABLE [Incidents] ADD [MonitoredApplicationId] INT NULL;
                     END
+                END
+
+                IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Products')
+                BEGIN
+                    IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'Products' AND COLUMN_NAME = 'Category')
+                    BEGIN
+                        ALTER TABLE [Products] ADD [Category] NVARCHAR(MAX) NULL;
+                    END
+                    IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'Products' AND COLUMN_NAME = 'Description')
+                    BEGIN
+                        ALTER TABLE [Products] ADD [Description] NVARCHAR(MAX) NULL;
+                    END
+                    IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'Products' AND COLUMN_NAME = 'ImageUrl')
+                    BEGIN
+                        ALTER TABLE [Products] ADD [ImageUrl] NVARCHAR(MAX) NULL;
+                    END
+                    IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'Products' AND COLUMN_NAME = 'Rating')
+                    BEGIN
+                        ALTER TABLE [Products] ADD [Rating] FLOAT NOT NULL DEFAULT 4.5;
+                    END
+                    IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'Products' AND COLUMN_NAME = 'ReviewsCount')
+                    BEGIN
+                        ALTER TABLE [Products] ADD [ReviewsCount] INT NOT NULL DEFAULT 10;
+                    END
+
+                    UPDATE [Products] 
+                    SET [Category] = COALESCE([Category], 'General'),
+                        [Description] = COALESCE([Description], 'High performance equipment item.'),
+                        [ImageUrl] = COALESCE([ImageUrl], 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500&q=80')
+                    WHERE [Category] IS NULL OR [Description] IS NULL OR [ImageUrl] IS NULL;
                 END
             ");
         }
@@ -67,80 +125,75 @@ public static class DbInitializer
             context.Users.AddRange(users);
         }
 
-        // 3. Seed Monitored Applications if empty
-        if (!context.MonitoredApplications.Any())
+        // 3. Seed 1 Monitored Application (ShopEasy E-Commerce Core)
+        try
         {
-            var shopEasyApp = new MonitoredApplication
+            if (!context.MonitoredApplications.Any())
             {
-                Name = "ShopEasy E-Commerce Core",
-                BaseUrl = "http://localhost:5000",
-                ApiKey = "app_shopeasy_live_key_99",
-                IsActive = true,
-                CreatedAt = DateTime.UtcNow,
-                LastSeenAt = DateTime.UtcNow
-            };
-
-            var paymentGwApp = new MonitoredApplication
-            {
-                Name = "Payment Gateway Microservice",
-                BaseUrl = "http://localhost:5001",
-                ApiKey = "app_payment_gw_key_88",
-                IsActive = true,
-                CreatedAt = DateTime.UtcNow,
-                LastSeenAt = DateTime.UtcNow
-            };
-
-            var inventoryApp = new MonitoredApplication
-            {
-                Name = "Inventory & Fulfillment Service",
-                BaseUrl = "http://localhost:5002",
-                ApiKey = "app_inventory_key_77",
-                IsActive = true,
-                CreatedAt = DateTime.UtcNow,
-                LastSeenAt = DateTime.UtcNow
-            };
-
-            context.MonitoredApplications.AddRange(shopEasyApp, paymentGwApp, inventoryApp);
-            context.SaveChanges();
-
-            // Seed Endpoints for ShopEasy App
-            context.MonitoredEndpoints.AddRange(
-                new MonitoredEndpoint
+                var shopEasyApp = new MonitoredApplication
                 {
-                    MonitoredApplicationId = shopEasyApp.MonitoredApplicationId,
-                    Name = "Order Placement API",
-                    Url = "http://localhost:5000/api/orders",
-                    Method = "POST",
-                    ExpectedStatusCode = 201,
-                    CheckIntervalSeconds = 10,
+                    Name = "ShopEasy E-Commerce Core",
+                    BaseUrl = "http://localhost:5001",
+                    ApiKey = "app_shopeasy_standalone_key",
                     IsActive = true,
-                    LastCheckedAt = DateTime.UtcNow
-                },
-                new MonitoredEndpoint
-                {
-                    MonitoredApplicationId = shopEasyApp.MonitoredApplicationId,
-                    Name = "Payment Processing API",
-                    Url = "http://localhost:5000/api/payments",
-                    Method = "POST",
-                    ExpectedStatusCode = 200,
-                    CheckIntervalSeconds = 10,
-                    IsActive = true,
-                    LastCheckedAt = DateTime.UtcNow
-                },
-                new MonitoredEndpoint
-                {
-                    MonitoredApplicationId = shopEasyApp.MonitoredApplicationId,
-                    Name = "Product Catalog API",
-                    Url = "http://localhost:5000/api/products",
-                    Method = "GET",
-                    ExpectedStatusCode = 200,
-                    CheckIntervalSeconds = 15,
-                    IsActive = true,
-                    LastCheckedAt = DateTime.UtcNow
-                }
-            );
+                    CreatedAt = DateTime.UtcNow,
+                    LastSeenAt = DateTime.UtcNow
+                };
+
+                context.MonitoredApplications.Add(shopEasyApp);
+                context.SaveChanges();
+
+                // Seed Endpoints for ShopEasy App
+                context.MonitoredEndpoints.AddRange(
+                    new MonitoredEndpoint
+                    {
+                        MonitoredApplicationId = shopEasyApp.MonitoredApplicationId,
+                        Name = "Order Placement API Endpoint",
+                        Url = "http://localhost:5001/api/shopeasy/orders",
+                        Method = "POST",
+                        ExpectedStatusCode = 200,
+                        CheckIntervalSeconds = 10,
+                        IsActive = true,
+                        LastCheckedAt = DateTime.UtcNow
+                    },
+                    new MonitoredEndpoint
+                    {
+                        MonitoredApplicationId = shopEasyApp.MonitoredApplicationId,
+                        Name = "Product Catalog API Endpoint",
+                        Url = "http://localhost:5001/api/shopeasy/products",
+                        Method = "GET",
+                        ExpectedStatusCode = 200,
+                        CheckIntervalSeconds = 15,
+                        IsActive = true,
+                        LastCheckedAt = DateTime.UtcNow
+                    },
+                    new MonitoredEndpoint
+                    {
+                        MonitoredApplicationId = shopEasyApp.MonitoredApplicationId,
+                        Name = "Telemetry Ingestion Probe",
+                        Url = "http://localhost:5000/api/telemetry/ingest",
+                        Method = "POST",
+                        ExpectedStatusCode = 200,
+                        CheckIntervalSeconds = 5,
+                        IsActive = true,
+                        LastCheckedAt = DateTime.UtcNow
+                    }
+                );
+                context.SaveChanges();
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[MonitoredApp Seeding Note] {ex.Message}");
         }
 
-        context.SaveChanges();
+        try
+        {
+            context.SaveChanges();
+        }
+        catch
+        {
+            // Ignore optional residual changes
+        }
     }
 }

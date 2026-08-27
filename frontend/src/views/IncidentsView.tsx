@@ -1,6 +1,7 @@
 import React from 'react';
 import { useTelemetry } from '../context/TelemetryContext';
 import { ActiveIncidentsSection } from '../components/ActiveIncidentsSection';
+import { GeminiAiAdvisorCard } from '../components/GeminiAiAdvisorCard';
 import { AlertTriangle, CheckCircle2 } from 'lucide-react';
 
 export const IncidentsView: React.FC = () => {
@@ -40,6 +41,9 @@ export const IncidentsView: React.FC = () => {
           <CheckCircle2 className="w-8 h-8 text-emerald-500" />
         </div>
       </div>
+
+      {/* Google Gemini AI SRE Advisor */}
+      <GeminiAiAdvisorCard />
 
       {/* Main Active & Historical Incidents List */}
       <ActiveIncidentsSection />
