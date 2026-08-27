@@ -12,7 +12,6 @@ import {
   FileText,
   LogOut,
   Settings,
-  UserCheck,
   GitMerge,
   Target,
   Wrench,
@@ -93,19 +92,16 @@ export const Sidebar: React.FC = () => {
       <div className="p-3 border-t border-slate-200 bg-slate-50">
         <div className="flex items-center justify-between p-2 rounded-xl bg-white border border-slate-200 shadow-sm">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-lg bg-blue-600 flex items-center justify-center font-bold text-white text-xs shadow-sm">
+            <div className="w-9 h-9 rounded-lg bg-blue-600 flex items-center justify-center font-extrabold text-white text-xs shadow-sm">
               AS
             </div>
             <div className="overflow-hidden">
               <p className="text-xs font-bold text-slate-900 truncate">Anand Singh</p>
-              <p className="text-[10px] text-slate-500 flex items-center gap-1 font-medium">
-                <UserCheck className="w-2.5 h-2.5 text-emerald-500" /> System Architect & Lead
-              </p>
             </div>
           </div>
           <div className="flex items-center gap-1">
             <button
-              onClick={() => showToast('System Architect & Team Lead: Anand Singh')}
+              onClick={() => showToast('Active User: Anand Singh')}
               className="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-md transition-colors"
               title="Settings"
             >

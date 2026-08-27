@@ -95,7 +95,7 @@ export const Header: React.FC = () => {
         {/* System Model Info Pill */}
         <div className="hidden lg:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-100 border border-slate-200 text-xs font-mono text-slate-700">
           <Gauge className="w-3.5 h-3.5 text-blue-600" />
-          <span>IncidentIQ Engine v1.4 (Lead: Anand Singh)</span>
+          <span>IncidentIQ Engine v1.4</span>
         </div>
       </div>
     </header>
