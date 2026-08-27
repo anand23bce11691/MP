@@ -2,7 +2,7 @@ import React from 'react';
 import { useTelemetry } from '../context/TelemetryContext';
 import type { ViewRoute } from '../types';
 import {
-  ShieldAlert,
+  Gauge,
   LayoutDashboard,
   Activity,
   AlertTriangle,
@@ -17,8 +17,7 @@ import {
   Target,
   Wrench,
   FileCheck2,
-  Lock,
-  Gauge
+  Lock
 } from 'lucide-react';
 
 export const Sidebar: React.FC = () => {
@@ -46,14 +45,14 @@ export const Sidebar: React.FC = () => {
     <aside className="w-64 bg-white border-r border-slate-200 flex flex-col h-screen fixed left-0 top-0 z-40 select-none shadow-sm">
       {/* Brand Header */}
       <div className="p-5 flex items-center gap-3 border-b border-slate-200">
-        <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white shadow-md shadow-blue-600/20">
-          <ShieldAlert className="w-6 h-6" />
+        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center text-white shadow-md shadow-blue-600/20">
+          <Gauge className="w-6 h-6 animate-pulse" />
         </div>
         <div>
           <div className="flex items-center gap-1">
             <span className="font-extrabold text-lg tracking-tight text-slate-900">Incident<span className="text-blue-600">IQ</span></span>
           </div>
-          <p className="text-[10px] font-bold text-slate-400 tracking-wider">AI OBSERVABILITY HUB</p>
+          <p className="text-[10px] font-extrabold text-blue-600 tracking-wider">STRESS TEST & SRE HUB</p>
         </div>
       </div>
 
@@ -95,18 +94,18 @@ export const Sidebar: React.FC = () => {
         <div className="flex items-center justify-between p-2 rounded-xl bg-white border border-slate-200 shadow-sm">
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 rounded-lg bg-blue-600 flex items-center justify-center font-bold text-white text-xs shadow-sm">
-              SA
+              AS
             </div>
             <div className="overflow-hidden">
-              <p className="text-xs font-bold text-slate-900 truncate">S. Anderson</p>
+              <p className="text-xs font-bold text-slate-900 truncate">Anand Singh</p>
               <p className="text-[10px] text-slate-500 flex items-center gap-1 font-medium">
-                <UserCheck className="w-2.5 h-2.5 text-emerald-500" /> Lead SRE Architect
+                <UserCheck className="w-2.5 h-2.5 text-emerald-500" /> System Architect & Lead
               </p>
             </div>
           </div>
           <div className="flex items-center gap-1">
             <button
-              onClick={() => showToast('Settings configured for Lead SRE Architect')}
+              onClick={() => showToast('System Architect & Team Lead: Anand Singh')}
               className="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-md transition-colors"
               title="Settings"
             >

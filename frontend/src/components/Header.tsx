@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useTelemetry } from '../context/TelemetryContext';
-import { Bell, CheckCircle2, AlertTriangle, ShieldAlert, X } from 'lucide-react';
+import { Bell, CheckCircle2, AlertTriangle, Gauge, X } from 'lucide-react';
 
 export const Header: React.FC = () => {
   const { globalStatus, notifications, markAllNotificationsRead } = useTelemetry();
@@ -13,7 +13,10 @@ export const Header: React.FC = () => {
       {/* Title & Sub-label */}
       <div>
         <div className="flex items-center gap-3">
-          <h1 className="text-xl font-extrabold tracking-tight text-slate-900">IncidentIQ</h1>
+          <h1 className="text-xl font-extrabold tracking-tight text-slate-900 flex items-center gap-2">
+            <Gauge className="w-5 h-5 text-blue-600 animate-pulse" />
+            IncidentIQ
+          </h1>
           
           {/* Operational Status Pill */}
           {globalStatus === 'healthy' ? (
@@ -29,7 +32,7 @@ export const Header: React.FC = () => {
           )}
         </div>
         <p className="text-xs text-slate-500 mt-0.5 font-medium">
-          AI-Powered Intelligent Incident Detection & Root-Cause Analysis
+          Autonomous AI Observability, Synthetic Stress Testing & Root-Cause Platform
         </p>
       </div>
 
@@ -91,8 +94,8 @@ export const Header: React.FC = () => {
 
         {/* System Model Info Pill */}
         <div className="hidden lg:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-100 border border-slate-200 text-xs font-mono text-slate-700">
-          <ShieldAlert className="w-3.5 h-3.5 text-blue-600" />
-          <span>IncidentIQ Engine v1.4</span>
+          <Gauge className="w-3.5 h-3.5 text-blue-600" />
+          <span>IncidentIQ Engine v1.4 (Lead: Anand Singh)</span>
         </div>
       </div>
     </header>
