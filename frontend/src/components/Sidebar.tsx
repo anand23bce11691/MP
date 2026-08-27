@@ -48,10 +48,7 @@ export const Sidebar: React.FC = () => {
           <Gauge className="w-6 h-6 animate-pulse" />
         </div>
         <div>
-          <div className="flex items-center gap-1">
-            <span className="font-extrabold text-lg tracking-tight text-slate-900">Incident<span className="text-blue-600">IQ</span></span>
-          </div>
-          <p className="text-[10px] font-extrabold text-blue-600 tracking-wider">STRESS TEST & SRE HUB</p>
+          <span className="font-extrabold text-xl tracking-tight text-slate-900">Incident<span className="text-blue-600">IQ</span></span>
         </div>
       </div>
 
