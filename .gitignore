@@ -11,6 +11,8 @@ obj/
 node_modules/
 frontend/node_modules/
 frontend/dist/
+ShopEasyApp/node_modules/
+ShopEasyApp/dist/
 *.log
 
 # Environment Variables & Keys
@@ -22,3 +24,13 @@ frontend/dist/
 # OS Generated Files
 .DS_Store
 Thumbs.db
+
+# Internal Local Documentation (Ignored from Git)
+TEAM_WORK_DISTRIBUTION.md
+REQUIREMENTS_ANALYSIS.md
+DATABASE_DESIGN.md
+SYSTEM_DESIGN.md
+MEMBER_1_VIVA_STUDY_GUIDE.md
+EVALUATION_VIVA_SCRIPT.md
+WALKTHROUGH_PLAN.md
+PROJECT_PROMPT.md
