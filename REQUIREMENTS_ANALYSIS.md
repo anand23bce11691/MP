@@ -1,15 +1,15 @@
 # Requirements Analysis Document (RAD)
-## Project Name: NEXGUARD IncidentIQ (AI-Powered Intelligent Incident Detection & Root-Cause Analysis Platform)
+## Project Name: IncidentIQ (AI-Powered Intelligent Incident Detection & Root-Cause Analysis Platform)
 
 ---
 
 ## 1. Executive Summary & Project Purpose
 
-**NEXGUARD IncidentIQ** (also referenced as **CAUSIQ** or **AI Incident Commander**) is an intelligent, real-time telemetry monitoring, anomaly detection, and automated root-cause analysis (RCA) platform built on **.NET 8** and **SQL Server**.
+**IncidentIQ** (also referenced as **CAUSIQ** or **AI Incident Commander**) is an intelligent, real-time telemetry monitoring, anomaly detection, and automated root-cause analysis (RCA) platform built on **.NET 8** and **SQL Server**.
 
 Modern software applications often degrade or crash due to complex, cascading failures—such as database queries slowing down, unindexed table scans, sudden traffic surges, or downstream API timeouts. Diagnosing these failures manually requires engineers to parse through thousands of raw application logs, database execution traces, and server performance metrics, causing high Mean Time to Resolution (MTTR).
 
-NEXGUARD IncidentIQ solves this problem by coupling a target micro-application (a mini E-Commerce system named **ShopEasy**) with an **AI Incident Commander**. The platform continuously collects application telemetry, evaluates metric drifts against historical baselines, detects anomalies in real-time, correlates time-series events, pinpoints the root cause, and prescribes exact remediation steps for developers. To allow reproducible evaluation without relying on production traffic, NEXGUARD IncidentIQ incorporates a **Controlled Traffic Simulator** (virtual users) and a **Chaos Failure Simulator**.
+IncidentIQ solves this problem by coupling a target micro-application (a mini E-Commerce system named **ShopEasy**) with an **AI Incident Commander**. The platform continuously collects application telemetry, evaluates metric drifts against historical baselines, detects anomalies in real-time, correlates time-series events, pinpoints the root cause, and prescribes exact remediation steps for developers. To allow reproducible evaluation without relying on production traffic, IncidentIQ incorporates a **Controlled Traffic Simulator** (virtual users) and a **Chaos Failure Simulator**.
 
 ---
 
@@ -43,7 +43,7 @@ NEXGUARD IncidentIQ solves this problem by coupling a target micro-application (
 ### 3.2 High-Level Architecture Diagram
 ```
  +-----------------------------------------------------------------------------------+
- |                             NEXGUARD INCIDENTIQ PLATFORM                          |
+ |                                INCIDENTIQ PLATFORM                                |
  |                                                                                   |
  |  +--------------------+         HTTP          +--------------------------------+  |
  |  |  Virtual Traffic   | --------------------> |    ShopEasy Target Application |  |

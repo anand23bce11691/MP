@@ -1,6 +1,6 @@
-# Master System Prompt: NEXGUARD IncidentIQ Building Instruction
+# Master System Prompt: IncidentIQ Building Instruction
 
-> **System Prompt Usage**: Copy and paste the prompt below into an AI agent (such as Antigravity, Claude, ChatGPT, or GitHub Copilot) to generate the complete, production-ready source code for the **NEXGUARD IncidentIQ** project.
+> **System Prompt Usage**: Copy and paste the prompt below into an AI agent (such as Antigravity, Claude, ChatGPT, or GitHub Copilot) to generate the complete, production-ready source code for the **IncidentIQ** project.
 
 ---
 
@@ -8,7 +8,7 @@
 YOU ARE AN EXPERT PRINCIPAL .NET ARCHITECT, FULL-STACK DEVELOPER, AND AI MONITORING ENGINEER.
 
 YOUR TASK IS TO DESIGN AND BUILD A COMPLETE, FULLY-FUNCTIONAL .NET 8 APPLICATION TITLED:
-"NEXGUARD IncidentIQ - AI-Powered Intelligent Incident Detection & Root-Cause Analysis Platform" (ALSO REFERRED TO AS CAUSIQ / AI INCIDENT COMMANDER).
+"IncidentIQ - AI-Powered Intelligent Incident Detection & Root-Cause Analysis Platform" (ALSO REFERRED TO AS CAUSIQ / AI INCIDENT COMMANDER).
 
 ===================================================================================
 1. PROJECT CONTEXT & CONCEPT OVERVIEW
@@ -36,26 +36,26 @@ To evaluate the system realistically without actual production traffic, you will
 ===================================================================================
 3. SOLUTION ARCHITECTURE & FILE STRUCTURE
 ===================================================================================
-Create a solution named `NEXGUARD.sln` containing the following project layout:
+Create a solution named `IncidentIQ.sln` containing the following project layout:
 
-NEXGUARD.sln
+IncidentIQ.sln
 ├── src/
-│   ├── NEXGUARD.Domain/
+│   ├── IncidentIQ.Domain/
 │   │   ├── Entities/ (User.cs, Product.cs, Order.cs, Payment.cs, SystemMetric.cs, ApplicationLog.cs, Incident.cs, IncidentEvidence.cs)
 │   │   └── Enums/ (IncidentType.cs, SeverityLevel.cs, IncidentStatus.cs)
 │   │
-│   ├── NEXGUARD.Infrastructure/
+│   ├── IncidentIQ.Infrastructure/
 │   │   ├── Data/ (AppDbContext.cs, DbInitializer.cs)
 │   │   ├── Interceptors/ (EfQueryInterceptor.cs)
 │   │   └── Repositories/ (TelemetryRepository.cs, IncidentRepository.cs)
 │   │
-│   ├── NEXGUARD.Services/
+│   ├── IncidentIQ.Services/
 │   │   ├── Telemetry/ (TelemetryCollectorMiddleware.cs, SystemMetricsWorker.cs)
 │   │   ├── Simulators/ (TrafficSimulatorService.cs, FailureSimulationManager.cs)
 │   │   ├── AI/ (AnomalyDetectionEngine.cs, RootCauseAnalysisEngine.cs)
 │   │   └── Hubs/ (TelemetryHub.cs)
 │   │
-│   └── NEXGUARD.Web/
+│   └── IncidentIQ.Web/
 │       ├── Controllers/ (AuthApiController.cs, ProductsApiController.cs, OrdersApiController.cs, PaymentsApiController.cs, SimulationApiController.cs, IncidentsApiController.cs)
 │       ├── Views/ (Dashboard, LiveMonitoring, Incidents, IncidentDetails, Simulations, Reports)
 │       ├── wwwroot/

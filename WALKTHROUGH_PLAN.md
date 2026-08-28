@@ -5,7 +5,7 @@
 
 ## 1. Executive Implementation Overview
 
-This document provides a complete, step-by-step implementation plan and presentation walkthrough for **NEXGUARD IncidentIQ**. It breaks down the 14-day development roadmap, system component integration, chaos failure simulation, and the exact script to demonstrate the platform during project presentations or viva examinations.
+This document provides a complete, step-by-step implementation plan and presentation walkthrough for **IncidentIQ**. It breaks down the 14-day development roadmap, system component integration, chaos failure simulation, and the exact script to demonstrate the platform during project presentations or viva examinations.
 
 ---
 
@@ -53,12 +53,12 @@ This document provides a complete, step-by-step implementation plan and presenta
 ### Phase 1: Foundation & Application Core (Days 1–3)
 
 #### **Day 1: Project Architecture & Database Design**
-- Initialize Solution Structure (`NEXGUARD.sln`) with standard C# Clean Architecture projects:
-  - `NEXGUARD.TargetApp` (ASP.NET Core Web API & Razor Dashboard)
-  - `NEXGUARD.Telemetry` (Telemetry collection middleware & models)
-  - `NEXGUARD.Core` (Domain entities, AI Interfaces, DTOs)
-  - `NEXGUARD.Infrastructure` (SQL Server DbContext, EF Core migrations, Data Seeding)
-  - `NEXGUARD.AI` (Anomaly detection & RCA engine)
+- Initialize Solution Structure (`IncidentIQ.sln`) with standard C# Clean Architecture projects:
+  - `IncidentIQ.TargetApp` (ASP.NET Core Web API & Razor Dashboard)
+  - `IncidentIQ.Telemetry` (Telemetry collection middleware & models)
+  - `IncidentIQ.Core` (Domain entities, AI Interfaces, DTOs)
+  - `IncidentIQ.Infrastructure` (SQL Server DbContext, EF Core migrations, Data Seeding)
+  - `IncidentIQ.AI` (Anomaly detection & RCA engine)
 - Design relational database schema in EF Core (`AppDbContext`):
   - Domain tables: `Users`, `Products`, `Orders`, `Payments`.
   - Telemetry tables: `SystemMetrics`, `ApplicationLogs`.
